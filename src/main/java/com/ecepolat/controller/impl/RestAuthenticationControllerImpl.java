@@ -3,7 +3,9 @@ package com.ecepolat.controller.impl;
 import com.ecepolat.controller.IRestAuthenticationController;
 import com.ecepolat.controller.RootEntity;
 import com.ecepolat.dto.AuthRequest;
+import com.ecepolat.dto.AuthResponse;
 import com.ecepolat.dto.DtoUser;
+import com.ecepolat.dto.RefreshTokenRequest;
 import com.ecepolat.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +25,17 @@ public class RestAuthenticationControllerImpl implements IRestAuthenticationCont
     @Override
     public RootEntity<DtoUser> register(@Valid @RequestBody AuthRequest input) {
         return ok(authenticationService.register(input));
+    }
+
+    @PostMapping("/authenticate")
+    @Override
+    public RootEntity<AuthResponse> authenticate(@Valid @RequestBody AuthRequest input) {
+        return ok(authenticationService.authenticate(input));
+    }
+
+    @PostMapping("/refreshToken")
+    @Override
+    public RootEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest input) {
+        return ok(authenticationService.refreshToken(input));
     }
 }
