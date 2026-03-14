@@ -15,7 +15,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,5 +57,56 @@ public class GalleristServiceImpl implements IGalleristService {
         dtoGallerist.setAddress(dtoAddress);
 
         return dtoGallerist;
+    }
+
+    @Override
+    public List<DtoGallerist> getAllGallerists() {
+
+        List<Gallerist> galleristList = galleristRepository.findAll();
+        List<DtoGallerist> dtoList = new ArrayList<>();
+
+        for (Gallerist gallerist : galleristList){
+            DtoGallerist dtoGallerist = new DtoGallerist();
+            BeanUtils.copyProperties(gallerist, dtoGallerist);
+
+            dtoList.add(dtoGallerist);
+        }
+        return dtoList;
+    }
+
+    @Override
+    public DtoGallerist updateGallerist(Long id, DtoGalleristIU dtoGalleristIU) {
+
+        Optional<Gallerist> optGallerist = galleristRepository.findById(id);
+
+        if (optGallerist.isEmpty()){
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
+        }
+
+        Gallerist gallerist = optGallerist.get();
+
+        BeanUtils.copyProperties(dtoGalleristIU, gallerist);
+
+        Gallerist updatedGallerist = galleristRepository.save(gallerist);
+
+        DtoGallerist dtoGallerist = new DtoGallerist();
+
+        BeanUtils.copyProperties(updatedGallerist, dtoGallerist);
+
+        return dtoGallerist;
+    }
+
+    @Override
+    public String deleteGallerist(Long id) {
+
+        Optional<Gallerist> optGallerist = galleristRepository.findById(id);
+
+        if (optGallerist.isEmpty()){
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
+        }
+
+        galleristRepository.delete(optGallerist.get());
+
+        return "Gallerist is deleted successfully";
     }
 }

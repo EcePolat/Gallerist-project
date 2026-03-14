@@ -8,10 +8,9 @@ import com.ecepolat.dto.DtoCustomerIU;
 import com.ecepolat.service.ICustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/customer")
@@ -25,4 +24,25 @@ public class RestCustomerControllerImpl extends RestBaseController implements IR
     public RootEntity<DtoCustomer> saveCustomer(@Valid @RequestBody DtoCustomerIU dtoCustomerIU) {
         return ok(customerService.saveCustomer(dtoCustomerIU));
     }
+
+    @PutMapping("/update/{id}")
+    @Override
+    public RootEntity<DtoCustomer> updateCustomer(@PathVariable Long id,
+                                                  @RequestBody DtoCustomerIU dtoCustomerIU) {
+        return ok(customerService.updateCustomer(id, dtoCustomerIU));
+    }
+
+    @GetMapping("/get")
+    @Override
+    public RootEntity<List<DtoCustomer>> getAllCustomers() {
+        return ok(customerService.getAllCustomers());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @Override
+    public RootEntity<String> deleteCustomer(@PathVariable Long id) {
+        return ok(customerService.deleteCustomer(id));
+    }
+
+
 }

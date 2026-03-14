@@ -17,8 +17,11 @@ import com.ecepolat.service.ICustomerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,5 +73,55 @@ public class CustomerServiceImpl implements ICustomerService {
         dtoCustomer.setAccount(dtoAccount);
 
         return dtoCustomer;
+    }
+
+    @Override
+    public List<DtoCustomer> getAllCustomers() {
+
+        List<Customer> customerList = customerRepository.findAll();
+        List<DtoCustomer> dtoList = new ArrayList<>();
+
+        for (Customer customer : customerList){
+            DtoCustomer dtoCustomer = new DtoCustomer();
+            BeanUtils.copyProperties(customer, dtoCustomer);
+
+            dtoList.add(dtoCustomer);
+        }
+
+        return dtoList;
+    }
+
+    @Override
+    public DtoCustomer updateCustomer(Long id, DtoCustomerIU dtoCustomerIU) {
+
+        Optional<Customer> optCustomer = customerRepository.findById(id);
+
+        if(optCustomer.isEmpty()){
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
+        }
+
+        Customer customer = optCustomer.get();
+
+        BeanUtils.copyProperties(dtoCustomerIU, customer);
+
+        Customer updatedCustomer = customerRepository.save(customer);
+
+        DtoCustomer dtoCustomer = new DtoCustomer();
+        BeanUtils.copyProperties(updatedCustomer, dtoCustomer);
+
+        return dtoCustomer;
+    }
+
+    @Override
+    public String deleteCustomer(Long id) {
+
+        Optional<Customer> optCustomer = customerRepository.findById(id);
+
+        if (optCustomer.isEmpty()){
+            throw new BaseException( new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
+        }
+
+        customerRepository.delete(optCustomer.get());
+        return id + "id'li customer deleted successfully.";
     }
 }
